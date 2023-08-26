@@ -102,14 +102,6 @@ int main() {
 
     uint32_t number_of_threads = 2;
 
-    class worker_data_t {
-        public:
-            int socket_fd = 0;
-            size_t thread_id = 0;
-    };
-
-    std::vector<worker_data_t> workers;;
-
     std::vector<std::thread> thread_group;
 
     for (size_t thread_id = 0; thread_id < number_of_threads; thread_id++) {
