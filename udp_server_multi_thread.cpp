@@ -11,7 +11,7 @@
 std::array<uint64_t, 512> packets_per_thread;
 
 bool create_and_bind_socket(std::size_t thread_id, const std::string& host, unsigned int port, uint32_t threads_per_port, int& sockfd) {
-    std::cout << "Netflow plugin will listen on " << host << ":" << port << " udp port" << std::endl;
+    std::cout << "We will listen on " << host << ":" << port << " udp port" << std::endl;
 
     struct addrinfo hints;
     memset(&hints, 0, sizeof hints);
@@ -30,7 +30,7 @@ bool create_and_bind_socket(std::size_t thread_id, const std::string& host, unsi
     int getaddrinfo_result = getaddrinfo(host.c_str(), port_as_string.c_str(), &hints, &servinfo);
 
     if (getaddrinfo_result != 0) {
-        std::cout << "getaddrinfo function failed with code: " << getaddrinfo_result << " please check host syntax" << std::endl;
+        std::cerr << "getaddrinfo function failed with code: " << getaddrinfo_result << " please check host syntax" << std::endl;
         return false;
     }
 
@@ -43,18 +43,17 @@ bool create_and_bind_socket(std::size_t thread_id, const std::string& host, unsi
     auto set_reuse_port_res = setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &reuse_port_optval, sizeof(reuse_port_optval));
 
     if (set_reuse_port_res != 0) {
-        std::cout << "Cannot enable reuse port mode" << std::endl;
+        std::cerr << "Cannot enable reuse port mode" << std::endl;
         return false;
     }
 
     int bind_result = bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
 
     if (bind_result) {
-        std::cout << "Can't bind on port: " << port << " on host " << host << " errno:" << errno
+        std::cerr << "Can't bind on port: " << port << " on host " << host << " errno:" << errno
                   << " error: " << strerror(errno) << std::endl;
 
         return false;
-        ;
     }
 
     std::cout << "Successful bind" << std::endl;
