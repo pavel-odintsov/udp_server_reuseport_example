@@ -67,10 +67,10 @@ bool create_and_bind_socket(std::size_t thread_id, const std::string& host, unsi
 void capture_traffic_from_socket(int sockfd, std::size_t thread_id) {
     std::cout << "Started capture" << std::endl;
 
-    while (true) {
-        const unsigned int udp_buffer_size = 65536;
-        char udp_buffer[udp_buffer_size];
+    const unsigned int udp_buffer_size = 65536;
+    char udp_buffer[udp_buffer_size];
 
+    while (true) {
         int received_bytes = recv(sockfd, udp_buffer, udp_buffer_size, 0);
 
         if (received_bytes > 0) {
