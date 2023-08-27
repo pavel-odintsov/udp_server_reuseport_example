@@ -131,7 +131,7 @@ int main() {
         bool result = create_and_bind_socket(thread_id, host, port, number_of_threads, socket_fd);
 
         if (!result) {
-            std::cout << "Cannot create / bind socket" << std::endl;
+            std::cerr << "Cannot create / bind socket" << std::endl;
             exit(1);
         }
 
