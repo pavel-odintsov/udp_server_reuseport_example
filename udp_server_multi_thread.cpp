@@ -1,12 +1,12 @@
+#include <array>
+#include <chrono>
 #include <iostream>
 #include <thread>
 #include <vector>
-#include <chrono>
-#include <array>
 
-#include <sys/socket.h>
-#include <string.h>
 #include <netdb.h>
+#include <string.h>
+#include <sys/socket.h>
 
 std::array<uint64_t, 512> packets_per_thread;
 
@@ -18,7 +18,7 @@ bool create_and_bind_socket(std::size_t thread_id, const std::string& host, unsi
 
     hints.ai_family   = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
-    
+
     // AI_PASSIVE to handle empty host as bind on all interfaces
     // AI_NUMERICHOST to allow only numerical host
     hints.ai_flags = AI_PASSIVE | AI_NUMERICHOST;
@@ -30,8 +30,7 @@ bool create_and_bind_socket(std::size_t thread_id, const std::string& host, unsi
     int getaddrinfo_result = getaddrinfo(host.c_str(), port_as_string.c_str(), &hints, &servinfo);
 
     if (getaddrinfo_result != 0) {
-        std::cout << "getaddrinfo function failed with code: " << getaddrinfo_result
-               << " please check host syntax" << std::endl;
+        std::cout << "getaddrinfo function failed with code: " << getaddrinfo_result << " please check host syntax" << std::endl;
         return false;
     }
 
@@ -44,17 +43,18 @@ bool create_and_bind_socket(std::size_t thread_id, const std::string& host, unsi
     auto set_reuse_port_res = setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &reuse_port_optval, sizeof(reuse_port_optval));
 
     if (set_reuse_port_res != 0) {
-        std::cout << "Cannot enable reuse port mode"<< std::endl;
+        std::cout << "Cannot enable reuse port mode" << std::endl;
         return false;
     }
 
     int bind_result = bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
 
     if (bind_result) {
-        std::cout << "Can't bind on port: " << port << " on host " << host
-               << " errno:" << errno << " error: " << strerror(errno) << std::endl;
+        std::cout << "Can't bind on port: " << port << " on host " << host << " errno:" << errno
+                  << " error: " << strerror(errno) << std::endl;
 
-        return false;;
+        return false;
+        ;
     }
 
     std::cout << "Successful bind" << std::endl;
@@ -83,16 +83,18 @@ void capture_traffic_from_socket(int sockfd, std::size_t thread_id) {
 void print_speed(uint32_t number_of_thread) {
     std::array<uint64_t, 512> packets_per_thread_previous = packets_per_thread;
 
-    std::cout <<"Thread ID" << "\t" << "UDP packet / second" << std::endl; 
+    std::cout << "Thread ID"
+              << "\t"
+              << "UDP packet / second" << std::endl;
 
     while (true) {
-	    std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	    for (uint32_t i = 0; i < number_of_thread; i++) {
+        for (uint32_t i = 0; i < number_of_thread; i++) {
             std::cout << "Thread " << i << "\t" << packets_per_thread[i] - packets_per_thread_previous[i] << std::endl;
-	    }
+        }
 
-	    packets_per_thread_previous = packets_per_thread;
+        packets_per_thread_previous = packets_per_thread;
     }
 }
 
@@ -118,7 +120,7 @@ bool set_process_name(std::thread& thread, const std::string& process_name) {
 
 int main() {
     std::string host = "::";
-    uint32_t port = 2055;
+    uint32_t port    = 2055;
 
     uint32_t number_of_threads = 2;
 
@@ -147,7 +149,7 @@ int main() {
     std::thread speed_printer(print_speed, number_of_threads);
 
     // Wait for all threads to finish
-    for (auto& thread: thread_group) {
+    for (auto& thread : thread_group) {
         thread.join();
     }
 }
